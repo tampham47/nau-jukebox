@@ -1,0 +1,35 @@
+{
+  "name": "nau-jukebox",
+  "version": "1.0.0",
+  "description": "jukebox",
+  "main": "jukebox.js",
+  "directories": {
+    "test": "tests"
+  },
+  "dependencies": {
+    "afplay": "^1.0.3",
+    "fs": "0.0.1-security",
+    "meteor-node-stubs": "^0.2.3",
+    "path": "^0.12.7",
+    "request": "^2.75.0"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/tampham47/nau-jukebox.git"
+  },
+  "keywords": [
+    "music",
+    "jukebox",
+    "naustudio"
+  ],
+  "author": "tampham47",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/tampham47/nau-jukebox/issues"
+  },
+  "homepage": "https://github.com/tampham47/nau-jukebox#readme"
+}

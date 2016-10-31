@@ -10,7 +10,6 @@ import { getSongInfoYouTube } from './imports/parsers/getSongInfoYouTube.js';
 import { JukeboxPlayer } from './imports/player/JukeboxPlayer.js';
 import { SongOrigin } from './imports/constants.js';
 
-
 // Set up a collection to contain song information. On the server,
 // it is backed by a MongoDB collection named 'songs'.
 Songs = new Meteor.Collection('songs');
@@ -71,7 +70,7 @@ if (Meteor.isClient) {
 		}
 	};
 
-	var submitSong = function(songurl) {
+	var submitSong = function(songurl, message) {
 		var nickname = Session.get('nickname').trim();
 		if (!nickname) {
 			showRequireMessage();
@@ -80,7 +79,7 @@ if (Meteor.isClient) {
 
 		Users.addOrUpdate(nickname);
 
-		Meteor.call('getSongInfo', songurl, nickname, function(error/*, result*/) {
+		Meteor.call('getSongInfo', songurl, nickname, message, function(error/*, result*/) {
 			if (error) {
 				alert('Cannot add the song at:\n' + songurl + '\nReason: ' + error.reason);
 				$('[name="songurl"]').val('');
@@ -338,7 +337,6 @@ if (Meteor.isClient) {
 			if (!amount || isNaN(amount)) {
 				alert('Input value is invalid !');
 				$(e.currentTarget).find('[name=amount]').val('');
-				console.log('amount', amount);
 				return;
 			}
 
@@ -366,6 +364,17 @@ if (Meteor.isClient) {
 		},
 		getStatus: function() {
 			return (this.isOnline ? '_active' : '');
+		}
+	});
+
+	Template.sweets.events({
+		'submit .js-sweets-submit-btn': function(e) {
+			var message = $(e.currentTarget).find('[name=content]').val();
+			console.log('js-sweets-submit-btn', message);
+			var messageUri = encodeURIComponent(message);
+			var mp3url = 'https://translate.google.com/translate_tts?tl=vi&client=tw-ob&ie=UTF-8&ttsspeed=1.5&q=' + messageUri;
+			console.log('js-sweets-submit-btn', mp3url);
+			submitSong(mp3url, message);
 		}
 	});
 
@@ -806,7 +815,7 @@ if (Meteor.isServer) {
 
 	Meteor.methods({
 
-		getSongInfo: function(songurl, author) {
+		getSongInfo: function(songurl, author, message) {
 			// Set up a future for async callback sending to clients
 			var songInfo;
 			var fut = new Future();
@@ -823,6 +832,18 @@ if (Meteor.isServer) {
 			} else if (String(songurl).contains('youtube')) {
 				console.log('Getting YouTube song info');
 				songInfo = getSongInfoYouTube(songurl);
+			} else {
+				songInfo = {
+					timeAdded: Date.now(),
+					originalURL: songurl,
+					streamURL: songurl,
+					origin: 'sweets',
+					name: message && message.substr(0, 32),
+					artist: 'sweets',
+					thumbURL: '',
+					lyric: message,
+					play: 0
+				};
 			}
 
 			songInfo.author = author;

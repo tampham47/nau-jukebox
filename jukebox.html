@@ -101,6 +101,9 @@
 					 --><li class="playlist-nav--item js-playlist-nav" data-tab="tab--naustorm" data-target="js-naustorm">
 						<a href="javascript:;">naustorm</a>
 					</li><!--
+					 --><li class="playlist-nav--item js-playlist-nav" data-tab="tab--sweets" data-target="js-sweets">
+						<a href="javascript:;">sweets</a>
+					</li><!--
 					 --><li class="playlist-nav--item js-playlist-nav" data-tab="tab--naucoin" data-target="js-naucoin">
 						<a href="javascript:;">₦aucoin</a>
 					</li>
@@ -144,6 +147,12 @@
 		<section id="js-naucoin" class="main-content" style="display:none">
 			<div class="container">
 				{{> naucoin}}
+			</div>
+		</section>
+
+		<section id="js-sweets" class="main-content" style="display:none">
+			<div class="container">
+				{{> sweets}}
 			</div>
 		</section>
 	</div>
@@ -280,6 +289,7 @@
 				</div>
 			</form>
 		</div>
+
 		<ul class="g-author--list g-author--list__naucoin">
 			{{#each dataContext}}
 				{{> naucoinitem}}
@@ -293,4 +303,43 @@
 <template name="naucoinitem">
 	<li class="g-author--item {{getStatus}}">{{userName}}<span class="g-author--ncoin">{{getBalance}}</span>
 	</li>
+</template>
+
+<template name="sweets">
+	<div class="sweets-section naucoin-section">
+		<h5>sweets\<small>₦1.00 for each broadcasts</small></h5>
+
+		<div class="payment-block">
+			<form action="#" onsubmit="return false;" class="js-sweets-submit-btn">
+				<div class="row">
+					<div class="columns seven">
+						<label for="sweets-content">your message</label>
+						<div class="u-full-width">
+							<input type="text" class="u-full-width" name="content" id="sweets-content" />
+						</div>
+						<small style="display: block; line-height: 1.2">(*) Your message will play immediately, you need to make sure the host is playing, or you will lose your money for nothing.</small>
+					</div>
+					<div class="columns three">
+						<label for="">&nbsp;</label>
+						<button type="submit" class="button-sweets button-naucoin">Submit</button>
+					</div>
+				</div>
+			</form>
+		</div>
+
+		<br>
+		<ul class="g-author--list g-author--list__naucoin">
+			<li>Bài thơ đầu anh viết tặng em, là bài thơ kể về đôi dép</li>
+			<li>Thuở còn thơ ngày 3 cữ là thường, tôi lai rai qua từng chai lớn nhỏ</li>
+			<li>Ai bảo say sưa là khổ, tôi mơ màng nghe men vút lên cao</li>
+			<li>Nhớ những ngày say sỉn té ở cầu ao</li>
+			<li>Vợ bắt được chưa mắng câu nào đã khóc</li>
+			<li>Cô bé nhà bên nhìn tôi cười khúc khích</li>
+			<li>Chị giận anh rồi tối qua ngủ với em</li>
+		</ul>
+	</div>
+</template>
+
+<template name="sweetsitem">
+	<li>{{content}}</li>
 </template>
