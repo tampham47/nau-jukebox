@@ -1,3 +1,6 @@
+/* © 2017 NauStud.io
+ * @author Thanh Tran
+ */
 /*global MediaElementPlayer*/
 
 /**
@@ -5,29 +8,27 @@
  *
  * This wraps the basic media element player with separate <video> tag
  */
-export class YouTubePlayer {
-
+export default class YouTubePlayer {
 	constructor(mainPlayer) {
 		this.type = 'YouTubePlayer';
 		this.song = null;
 		this.mainPlayer = mainPlayer;
-		this.$player = $('#youtube-player');
+		this.videoEl = document.getElementById('youtube-player');
+		this.panelPlayer = document.querySelector('.player-panel');
 	}
 
 	getYTVideoId(url) {
-		var regExp = /^.*(youtu\.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
-		var match = url.match(regExp);
+		const regExp = /^.*(youtu\.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
+		const match = url.match(regExp);
 		if (match && match[2].length === 11) {
 			return match[2];
-		} else {
-			// error
-			return '';
 		}
+
+		return '';
 	}
 
 	_onVideoEnded() {
 		console.log('Video ended for:', this.song.name);
-		this.player.media.pluginApi.stopVideo();
 		this.mainPlayer.playNext();
 	}
 
@@ -37,48 +38,58 @@ export class YouTubePlayer {
 
 			if (this.player) {
 				// youtube player already created, reuse by calling its api
-				let videoId = this.getYTVideoId(song.streamURL);
-				this.player.media.pluginApi.loadVideoById(videoId, 0);
+				// let videoId = this.getYTVideoId(song.streamURL);
+				// this.player.media.pluginApi.loadVideoById(videoId, 0);
+				this.player.media.setSrc(song.streamURL);
 			} else {
-
 				// play new song
-				this.$player.find('source').attr('src', song.streamURL);
-				this.player = new MediaElementPlayer(this.$player, {
+				this.videoEl.src = song.streamURL;
+				this.player = new MediaElementPlayer(this.videoEl, {
 					features: [
 						// 'playpause',
-						// 'progress',
 						'current',
+						'progress',
 						'duration',
 						// 'tracks',
 						// 'volume',
 						'fullscreen',
 					],
-					success: (media) => {
-						this.player.play();
+					success: (mediaElement /*, originalNode, player*/) => {
+						// console.log('youtubeplayer init success:', mediaElement, originalNode, player);
+						// store the container to show / hide
+						this.container = mediaElement.closest('.mejs__video');
+						if (!this.container) {
+							// just in case closest() not working
+							this.container = document.querySelector('.mejs__video');
+						}
 
-						// this is fake events, must add at success callback
-						media.addEventListener('ended', () => {
+						// this is simulated events, must add at success callback
+						mediaElement.addEventListener('ended', () => {
 							//avoid player flick during transition to next song
-							media.pause();
+							// player.media.pluginApi.stopVideo();
+							// a cue events will trigger later which we'll use to start next song
 							this._onVideoEnded();
 						});
-					}
+					},
 				});
 
 				// for debugging
-				// window.mePlayer = this.player;
+				// window.ytPlayer = this.player;
 			}
-		} else {
-			this.player.play();
 		}
 
-		this.$player.closest('.mejs-video').css('visibility', 'visible');
-
+		this.player.play();
+		if (this.container) {
+			this.panelPlayer.style.zIndex = 1;
+			this.container.style.display = 'block';
+		}
 	}
 
 	pause() {
-		this.$player.closest('.mejs-video').css('visibility', 'hidden');
+		if (this.container) {
+			this.panelPlayer.style.zIndex = -1;
+			this.container.style.display = 'none';
+		}
 		this.player.pause();
 	}
-
 }

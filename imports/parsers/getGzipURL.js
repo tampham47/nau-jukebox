@@ -1,4 +1,6 @@
-/*Deprecated, to remove*/
+/* © 2017 NauStud.io
+ * @author Thanh Tran
+ */
 import { HTTP } from 'meteor/http';
 
 /**
@@ -7,10 +9,10 @@ import { HTTP } from 'meteor/http';
  * @param  {Function} callback [description]
  * @return {[type]}            [description]
  */
-export const getGzipURL = Meteor.wrapAsync(function(url, callback) {
+const getGzipURL = Meteor.wrapAsync((url, callback) => {
 	// Learn this synchronous wrapper technique in http package source
-	var reqOptions = {
-		url: url,
+	const reqOptions = {
+		url,
 		method: 'GET',
 		encoding: null,
 		npmRequestOptions: {
@@ -23,7 +25,9 @@ export const getGzipURL = Meteor.wrapAsync(function(url, callback) {
 		// headers: headers
 	};
 
-	HTTP.get(url, reqOptions, function(error, result) {
+	HTTP.get(url, reqOptions, (error, result) => {
 		callback(error, result);
 	});
 });
+
+export default getGzipURL;

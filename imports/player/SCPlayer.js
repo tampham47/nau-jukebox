@@ -1,9 +1,12 @@
+/* © 2017 NauStud.io
+ * @author Tung Tran
+ */
 /*global SC*/
 
 /**
  * SoundClound Player
  */
-export class SCPlayer {
+export default class SCPlayer {
 
 	constructor(mainPlayer) {
 		this.type = 'SoundCloudPlayer';
@@ -51,7 +54,7 @@ export class SCPlayer {
 					this.player.play();
 				});
 			}
-		} else {
+		} else if (this.player && this.song) {
 			this.player.play();
 		}
 	}

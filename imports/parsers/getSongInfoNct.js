@@ -1,15 +1,16 @@
-/**
+/* © 2017 NauStud.io
+ * @author Thanh Tran
+ *
  * NCT URL parser module
  */
-import { SongOrigin } from '../constants.js';
 import { xml2js } from 'meteor/vjau:xml2js';
-import { getGzipURL } from './getGzipURL';
+import getGzipURL from './getGzipURL';
+import { SongOrigin, defaultThumbnailUrl } from '../constants.js';
 
 // Utility / Private functions
-var xmlURLReg = /http:\/\/www.nhaccuatui.com\/flash\/xml\?key1=(\w+)/;
-var lyricReg = /<p id=\"divLyric\"[\s\S]+ <\/p>/;
+const xmlURLReg = /https?:\/\/(?:www)?.nhaccuatui.com\/flash\/xml\?.*?key1=(\w+)/;
+const lyricReg = /<p id="divLyric"[\s\S]+ <\/p>/;
 // sample xml url: "http://www.nhaccuatui.com/flash/xml?key1=99decd7306277634419b987bed859265"
-
 
 /**
  * Get NCT stream URL and other info
@@ -17,8 +18,10 @@ var lyricReg = /<p id=\"divLyric\"[\s\S]+ <\/p>/;
  * @param  {[type]} songurl [description]
  * @return {[type]}         [description]
  */
-export const getSongInfoNct = function(songurl) {
-	var linkRes, xmlURLResults, lyricResults, xmlURL, lyric;
+const getSongInfoNct = songurl => {
+	let linkRes;
+	let xmlURL;
+	let lyric;
 
 	// First Step: parse the HTML page to get the XML data URL for the flash-based player
 
@@ -28,23 +31,25 @@ export const getSongInfoNct = function(songurl) {
 		console.error('Get NCT MP3 URL Error', err);
 	}
 
-	linkRes = (linkRes.content) ? linkRes.content : '';
+	linkRes = linkRes && linkRes.content ? linkRes.content : '';
 	// console.log('linkRes:', linkRes);
 
 	// run the html against regexp to get XML URL
-	xmlURLResults = xmlURLReg.exec(linkRes);
-	lyricResults = lyricReg.exec(linkRes);
+	const xmlURLResults = xmlURLReg.exec(linkRes);
+	const lyricResults = lyricReg.exec(linkRes);
 
 	if (xmlURLResults) {
 		xmlURL = xmlURLResults[0];
 		console.log('xmlURLResults:', xmlURLResults[0]);
 	} else {
 		console.log('xmlURL parse failed');
+
 		return null;
 	}
 
 	if (lyricResults) {
-		if (lyricResults[0].indexOf('javascript:;') > -1) {
+		// eslint-disable-next-line no-script-url
+		if (lyricResults[0].includes('javascript:;')) {
 			lyric = null;
 		} else {
 			lyric = lyricResults[0];
@@ -56,11 +61,13 @@ export const getSongInfoNct = function(songurl) {
 
 	// Second Step: get the XML data file for the sone
 
-	var xmlRes, json;
+	let xmlRes;
+
+	let json;
 
 	// Note: Manually install the node package in server folder
-	var parser = new xml2js.Parser({
-		trim: true
+	const parser = new xml2js.Parser({
+		trim: true,
 	});
 
 	// console.log('XML2JS:', XML2JS);
@@ -72,12 +79,11 @@ export const getSongInfoNct = function(songurl) {
 
 		// Third Step: parse and convert the XML string to JSON object
 
-		parser.parseString(xmlRes, function(error, result) {
+		parser.parseString(xmlRes, (error, result) => {
 			json = result;
 		});
-		console.log('==> ' + JSON.stringify(json));
+		console.log(`==> ${JSON.stringify(json)}`);
 		// see sample JSON below
-
 	} catch (err) {
 		console.error('Get NCT stream Error', err);
 	}
@@ -86,12 +92,12 @@ export const getSongInfoNct = function(songurl) {
 
 	if (json && json.tracklist && json.tracklist.track[0]) {
 		console.log('Checking the XML data');
-		var track = json.tracklist.track[0];
+		const track = json.tracklist.track[0];
 
 		//TODO: need to check if we ever got error with copyright checker like Zing
 		if (track.location[0] /*&& String(track.errorcode[0]) === '0'*/) {
 			console.log('URL is valid. Adding new song.');
-			// return { error: 'testing' }
+
 			return {
 				timeAdded: Date.now(),
 				originalURL: songurl,
@@ -99,29 +105,31 @@ export const getSongInfoNct = function(songurl) {
 				name: track.title[0],
 				artist: track.creator[0],
 				streamURL: track.location[0],
-				thumbURL: track.avatar[0],
-				lyric: lyric,
-				play: 0
+				thumbURL: track.avatar[0] || defaultThumbnailUrl,
+				lyric,
+				play: 0,
 			};
 		} else if (track.errormessage[0]) {
-			console.log('Error received: ' + track.errormessage[0]);
+			console.log(`Error received: ${track.errormessage[0]}`);
+
 			return {
-				error: track.errormessage[0]
-			};
-		} else {
-			console.log('Unknown errors');
-			return {
-				error: 'Errors unknown.'
+				error: track.errormessage[0],
 			};
 		}
+		console.log('Unknown errors');
 
-	} else {
-		console.log('Can\'t parse link');
 		return {
-			error: 'Can\'t parse and get song info from link'
+			error: 'Errors unknown.',
 		};
 	}
+	console.log("Can't parse link");
+
+	return {
+		error: "Can't parse and get song info from link",
+	};
 };
+
+export default getSongInfoNct;
 
 //sample json:
 // {

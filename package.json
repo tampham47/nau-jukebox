@@ -1,0 +1,47 @@
+{
+  "name": "nau-jukebox",
+  "version": "1.1.1",
+  "author": "Nau Studio",
+  "license": "MIT",
+  "repository": "https://github.com/naustudio/nau-jukebox",
+  "scripts": {
+    "eslint-check": "eslint --print-config .eslintrc | eslint-config-prettier-check",
+    "lint": "eslint .",
+    "start": "meteor --settings settings.json",
+    "test": "npm run lint"
+  },
+  "browserslist": [
+    "defaults",
+    "ie >= 10",
+    "android >= 4.0",
+    "ios >= 8"
+  ],
+  "devDependencies": {
+    "babel-eslint": "^8.0.3",
+    "eslint": "^4.13.1",
+    "eslint-config-nau-react": "^15.0.0",
+    "eslint-config-prettier": "^2.9.0",
+    "eslint-import-resolver-meteor": "^0.4.0",
+    "eslint-plugin-import": "^2.8.0",
+    "eslint-plugin-jsx-a11y": "^6.0.3",
+    "eslint-plugin-promise": "^3.3.0",
+    "eslint-plugin-react": "^7.5.1",
+    "stylelint": "^8.1.1",
+    "stylelint-config-standard": "^17.0.0"
+  },
+  "dependencies": {
+    "babel-runtime": "^6.26.0",
+    "date-fns": "^1.29.0",
+    "flux": "^3.1.3",
+    "he": "^1.1.1",
+    "history": "^4.7.2",
+    "meteor-node-stubs": "^0.3.2",
+    "proptypes": "^1.1.0",
+    "react": "^16.2.0",
+    "react-dom": "^16.2.0",
+    "react-ga": "^2.4.0",
+    "react-router": "^4.2.0",
+    "react-router-dom": "^4.2.2",
+    "simpl-schema": "^1.3.0"
+  }
+}

@@ -1,4 +1,6 @@
 private/dump/
+package-lock.json
+settings.local.json
 
 # NodeJS #
 ####################
@@ -126,3 +128,5 @@ proguard/
 .Trashes
 ehthumbs.db
 Thumbs.db
+
+\.vscode/
